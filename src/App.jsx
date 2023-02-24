@@ -22,20 +22,16 @@ function App() {
     const detailsTable = useRef()
 
     const getRanks = async () => {
-        const options = {
-            method: "GET",
-            url: `https://api.traitsniper.com/v1/collections/${collection}/ranks?page=1&limit=10000`,
-            headers: {
-                "Access-Control-Allow-Origin": "*",
-                accept: "*/*",
-                "x-ts-api-key": "bf5f1969-44e7-4db8-85d4-3d8508f6a1f4",
-                "Accept-Encoding": "gzip, deflate, br",
-                Connection: "keep-alive"
-            }
-        }
         try {
-            const res = await axios.request(options)
-            setRanks(res.data.ranks)
+            const res = await axios.get(
+                `http://localhost:4000/api/sniper/ranks/`,
+                {
+                    params: {
+                        collection
+                    }
+                }
+            )
+            setRanks(res.data)
             pricesTable.current.style.display = "none"
             detailsTable.current.style.display = "none"
             ranksTable.current.style.display = "block"
@@ -45,17 +41,14 @@ function App() {
     }
 
     const getPrices = async () => {
-        const options = {
-            method: "GET",
-            url: `https://api.traitsniper.com/v1/collections/${collection}/prices?page=1&limit=200`,
-            headers: {
-                accept: "application/json",
-                "x-ts-api-key": api.key
-            }
-        }
         try {
-            const res = await axios.request(options)
-            setPrices(res.data.prices)
+            const res = await axios.get(
+                `http://localhost:4000/api/sniper/prices/`,
+                {
+                    params: { collection }
+                }
+            )
+            setPrices(res.data)
             ranksTable.current.style.display = "none"
             detailsTable.current.style.display = "none"
             pricesTable.current.style.display = "block"
@@ -65,17 +58,14 @@ function App() {
     }
 
     const getDetails = async () => {
-        const options = {
-            method: "GET",
-            url: `https://api.traitsniper.com/v1/collections/${collection}/nfts/${id}`,
-            headers: {
-                accept: "application/json",
-                "x-ts-api-key": api.key
-            }
-        }
         try {
-            const res = await axios.request(options)
-            setDetails(res.data.data)
+            const res = await axios.get(
+                `http://localhost:4000/api/sniper/details/`,
+                {
+                    params: { collection, id }
+                }
+            )
+            setDetails(res.data)
             pricesTable.current.style.display = "none"
             ranksTable.current.style.display = "none"
             detailsTable.current.style.display = "block"
@@ -110,16 +100,25 @@ function App() {
                         }}
                     />
                 </form>
-                <div className="data">
+                <div className="api-btns">
                     <button className="api-btn" onClick={getRanks}>
                         Get Ranks
                     </button>
+                    <button className="api-btn" onClick={getPrices}>
+                        Get Prices
+                    </button>
+                    <button className="api-btn" onClick={getDetails}>
+                        Get Details
+                    </button>
+                </div>
+                <div className="data">
                     <TableContainer
                         component={Paper}
                         sx={{
-                            marginLeft: "15vw",
                             width: "70vw",
-                            display: "none"
+                            height: "55vh",
+                            display: "none",
+                            overflow: "auto"
                         }}
                         ref={ranksTable}
                     >
@@ -158,19 +157,17 @@ function App() {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <button className="api-btn" onClick={getPrices}>
-                        Get Prices
-                    </button>
                     <TableContainer
                         component={Paper}
                         sx={{
-                            marginLeft: "15vw",
-                            width: "70vw",
-                            display: "none"
+                            width: "40vw",
+                            height: "55vh",
+                            display: "none",
+                            overflow: "auto"
                         }}
                         ref={pricesTable}
                     >
-                        <Table sx={{ minWidth: 650 }} aria-label="simple table">
+                        <Table aria-label="simple table">
                             <TableHead>
                                 <TableRow>
                                     <TableCell>ID</TableCell>
@@ -203,13 +200,9 @@ function App() {
                             </TableBody>
                         </Table>
                     </TableContainer>
-                    <button className="api-btn" onClick={getDetails}>
-                        Get Details
-                    </button>
                     <TableContainer
                         component={Paper}
                         sx={{
-                            marginLeft: "15vw",
                             width: "70vw",
                             overflowX: "auto",
                             display: "none"
@@ -220,18 +213,10 @@ function App() {
                             <TableHead>
                                 <TableRow>
                                     <TableCell>Name</TableCell>
-                                    <TableCell align="right">
-                                        Image URL
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        Rarity Score
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        Rarity Rank
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        Opensea URL
-                                    </TableCell>
+                                    <TableCell>Image URL</TableCell>
+                                    <TableCell>Rarity Score</TableCell>
+                                    <TableCell>Rarity Rank</TableCell>
+                                    <TableCell>Opensea URL</TableCell>
                                 </TableRow>
                             </TableHead>
                             <TableBody>
@@ -243,17 +228,14 @@ function App() {
                                     }}
                                 >
                                     <TableCell component="th" scope="row">
-                                        {details.image}
+                                        {details.name}
                                     </TableCell>
-                                    <TableCell align="right">
+                                    <TableCell>{details.image}</TableCell>
+                                    <TableCell>
                                         {details.rarity_score}
                                     </TableCell>
-                                    <TableCell align="right">
-                                        {details.rarity_rank}
-                                    </TableCell>
-                                    <TableCell align="right">
-                                        {details.opensea_url}
-                                    </TableCell>
+                                    <TableCell>{details.rarity_rank}</TableCell>
+                                    <TableCell>{details.opensea_url}</TableCell>
                                 </TableRow>
                             </TableBody>
                         </Table>

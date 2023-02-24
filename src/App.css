@@ -20,15 +20,20 @@ input{
 }
 
 .data{
-  min-height: 30vw;
+  height: fit-content;
   display: flex;
-  flex-direction: column;
-  justify-content: space-around;
+  justify-content: center;
+}
+
+.api-btns{
+  height: 8vh;
+  display: flex;
+  justify-content: center;
+  column-gap: 5vw;
 }
 
 .api-btn{
   width: 20%;
   height: 5vh;
   cursor: pointer;
-  margin-left: 40%;
 }
